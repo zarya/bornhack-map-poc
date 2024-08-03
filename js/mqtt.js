@@ -5,3 +5,23 @@ function topicData(topic, payload) {
         }
     });
 }
+
+topicData("trafficlight/1", {"value":"green"})
+topicData("trafficlight/2", {"value":"red"})
+topicData("hottub", {"value":"39.5"})
+var lightSide = 0;
+let myVar = setInterval(myTimer, 3000);
+function myTimer() {
+  const tub = Math.floor(Math.random() * (45 - 25 + 1) + 25);
+  topicData("hottub", {"value":tub+""})
+
+  if (lightSide) {
+    lightSide = 0
+    topicData("trafficlight/1", {"value":"green"})
+    topicData("trafficlight/2", {"value":"red"})
+  } else {
+    topicData("trafficlight/2", {"value":"green"})
+    topicData("trafficlight/1", {"value":"red"})
+    lightSide = 1
+  }
+}
