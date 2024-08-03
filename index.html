@@ -23,13 +23,16 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="map/Gridsquares_4.js"></script>
     <script src="map/bornhack-mqtt-test.js"></script>
+    <script src="js/mapClass.js"></script>
     <script>
+        const mapObject = new BHMap("map");
+        const proc  = new Processing();
 
-        cols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', 'AW', 'AX', 'AY', 'AZ'];
-        var selectedLayer;
+        function findGrid() {
+            const layer = mapObject.findGrid(document.getElementById('grid').value);
+            layer.setStyle({fillOpacity: 1.0});
+        }
     </script>
-    <script src="js/mapFunctions.js"></script>
-    <script src="js/map.js"></script>
     <script src="js/processing.js"></script>
     <script src="js/mqtt.js"></script>
 </body>
