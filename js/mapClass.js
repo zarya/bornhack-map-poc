@@ -26,6 +26,15 @@ class BHMap {
 
     this.mqttLayer = L.geoJson(mqttTest, {
       onEachFeature: this.onEachMqttFeature,
+      pointToLayer: function(feature, latlng) {
+        if (feature.properties.marker == "circle")
+          return new L.CircleMarker(latlng, {
+            radius: 5,
+            color: '#FF0000'
+          });
+        else
+          return L.marker(latlng) 
+      },
       style: {
         color: "green",
         fillOpacity: 1.0,

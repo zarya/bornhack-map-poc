@@ -52,4 +52,17 @@ class Processing {
         shadowSize: [41, 41]
       }));
   }
+  noisesensor(_topic, payload, layer) {
+    var hue = ((1 - payload.avg / 100) * 120).toString(10);
+    var color = ["hsl(", hue, ",100%,50%)"].join("");
+    layer.setStyle({
+      radius: payload.avg * 1.4,
+      fillColor: color
+    })
+    layer.bindTooltip(layer.feature.properties.Name + ": " + payload.avg + " dB", {
+        permanent: true, 
+        direction: 'right'
+    });
+    layer.openTooltip();
+  }
 }
