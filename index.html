@@ -23,17 +23,45 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="map/Gridsquares_4.js"></script>
     <script src="map/bornhack-mqtt-test.js"></script>
+    <script src="js/processing.js"></script>
     <script src="js/mapClass.js"></script>
     <script>
         const mapObject = new BHMap("map");
         const proc  = new Processing();
 
-        function findGrid() {
-            const layer = mapObject.findGrid(document.getElementById('grid').value);
+        mapObject.onGridClick = function (e) {
+            e.target.setStyle({fillOpacity: 1.0});
+            let center = e.target.getCenter();
+            document.getElementById('selectedGridCenter').innerHTML = center.lat + "," + center.lng;
+            document.getElementById('selectedGrid').innerHTML = mapObject.cols[e.target.feature.properties.col_index - 2] + (e.target.feature.properties.row_index - 1);
+            document.getElementById('grid').value = "";
+        }
+
+        function findGrid () {
+            const grid = document.getElementById('grid').value;
+            if (grid.includes(",")) {
+                findGridLoc(grid); 
+            } else {
+                findGridName(grid);
+            }
+        }
+
+        function findGridName(grid) {
+            const layer = mapObject.findGridName(grid);
+            let center = layer.getCenter();
+            document.getElementById('selectedGridCenter').innerHTML = center.lat + "," + center.lng;
+            document.getElementById('selectedGrid').innerHTML = document.getElementById('grid').value;
+            layer.setStyle({fillOpacity: 1.0});
+        }
+        
+        function findGridLoc(grid) {
+            const layer = mapObject.findGridLoc(grid.split(",")[0], grid.split(",")[1]);
+            let center = layer.getCenter();
+            document.getElementById('selectedGridCenter').innerHTML = center.lat + "," + center.lng;
+            document.getElementById('selectedGrid').innerHTML = mapObject.cols[layer.feature.properties.col_index - 2] + (layer.feature.properties.row_index - 1);
             layer.setStyle({fillOpacity: 1.0});
         }
     </script>
-    <script src="js/processing.js"></script>
     <script src="js/mqtt.js"></script>
 </body>
 </html>

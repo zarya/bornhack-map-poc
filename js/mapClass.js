@@ -1,6 +1,9 @@
 class BHMap {
   constructor(div) {
-    this.findGrid = this.findGrid.bind(this)
+    this.onGridClick = function (_e) {}
+    this.findGridName = this.findGridName.bind(this)
+    this.findGridLoc = this.findGridLoc.bind(this)
+    this.findGridLocEach = this.findGridLocEach.bind(this)
     this.findGridEach = this.findGridEach.bind(this)
     this.onEachGrid = this.onEachGrid.bind(this)
     this.onEachGridClick = this.onEachGridClick.bind(this)
@@ -31,23 +34,27 @@ class BHMap {
     }).addTo(this.map);
   }
 
-  findSquare(lat, lon) {
+  // Find the grid locator by lat lng
+  findGridLoc(lat, lon) {
     const m1 = L.latLng([lat, lon]);
-    this.gridLayer.eachLayer(function(e) {
-      if (e.getBounds().contains(m1)) {
-        this.selectedLayer = e;
-      }
-    });
+    this.gridLayer.eachLayer(e => this.findGridLocEach(e,m1));
     return this.selectedLayer;
   }
 
-  findGrid(fullgrid) {
+  findGridLocEach(e, m1) {
+    if (e.getBounds().contains(m1)) {
+      this.resetStyle();
+      this.selectedLayer = e;
+    }
+  }
+
+  // Find the grid locator by name
+  findGridName(fullgrid) {
     this.resetStyle();
     let regex = /^([A-Z]+)([0-9]+)/g;
     const reggrid = regex.exec(fullgrid);
     const col = this.cols.indexOf(reggrid[1]) + 2;
     const row = Number(reggrid[2]) + 1
-    document.getElementById('selectedGrid').innerHTML = reggrid[0]; 
     this.gridLayer.eachLayer(layer => this.findGridEach(layer, col, row));
     return this.selectedLayer;
   }
@@ -72,12 +79,8 @@ class BHMap {
 
   onEachGridClick(e) {
     this.resetStyle();
-    e.target.setStyle({fillOpacity: 1.0});
     this.selectedLayer = e.target;
-    let center = e.target.getCenter();
-    document.getElementById('selectedGridCenter').innerHTML = center.lat + "/" + center.lng;
-    document.getElementById('selectedGrid').innerHTML = this.cols[e.target.feature.properties.col_index - 2] + (e.target.feature.properties.row_index - 1);
-    document.getElementById('grid').value = ""; 
+    this.onGridClick(e);
   }
 
   onEachMqttFeature(_feature, layer) {
