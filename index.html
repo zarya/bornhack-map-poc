@@ -11,6 +11,30 @@
             padding: 0;
             margin: 0;
         }
+        .leaflet-popup-scrolled {
+            border-bottom: unset!important;
+            border-top: unset!important;
+        }
+        .leaflet-popup-content{
+            max-height: 70vh;
+            max-width: 70vw;
+        }
+        .leaflet-popup-content.media{
+            width: auto!important;
+            height: auto!important;
+        }
+        .leaflet-popup-content th {
+            text-align: left;
+            vertical-align: top;
+            min-width: 75px;
+        }
+        .leaflet-popup-content td {
+            min-width: 75px;
+        }
+        .leaflet-popup-content td img {
+            max-height: 60vh;
+            max-width: 60vw;
+        }
     </style>
 </head>
 <body>
@@ -22,10 +46,70 @@
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/processing.js"></script>
-    <script src="js/mapClass.js"></script>
+    <script src="js/map.js"></script>
     <script>
+        function addClassToPopupIfMedia(content, popup) {
+			var tempDiv = document.createElement('div');
+			tempDiv.innerHTML = content;
+			if (tempDiv.querySelector('td img')) {
+				popup._contentNode.classList.add('media');
+					// Delay to force the redraw
+					setTimeout(function() {
+						popup.update();
+					}, 10);
+			} else {
+				popup._contentNode.classList.remove('media');
+			}
+		}
         const mapObject = new BHMap("map");
         const proc  = new Processing();
+        const popOptions = {
+            onEachFeature: function(feature, layer) {
+                layer.on('click', function (e) {
+                    console.log(e);
+                });
+                const content = `${feature.properties['name']}`
+                layer.bindPopup(content, { maxHeight: 400});
+            }
+        }
+        const photoOptions = {
+            onEachFeature: function(feature, layer) {
+                const content = `<table><tr><td colspan="2"><img src="https://gigafreak.net/bh2024/${feature.properties['name']}" /></td></tr></table>`
+                layer.on('popupopen', function(e) {
+                    addClassToPopupIfMedia(content, e.popup);
+                });
+                layer.bindPopup(content, { maxHeight: 400});
+            }
+        }
+
+        mapObject.loadLayer("mqtt", {
+            onEachFeature: function(_feature, layer) {
+                layer.on('click', function (e) {
+                    console.log(e);
+                });          
+            },
+            pointToLayer: function(feature, latlng) {
+                if (feature.properties.marker == "circle")
+                    return new L.CircleMarker(latlng, {
+                        radius: 5,
+                        color: '#FF0000'
+                    });
+                else
+                    return L.marker(latlng)
+            },
+            style: {
+                color: "green",
+                fillOpacity: 1.0,
+                weight: 0.5
+            }
+        })
+
+        mapObject.loadLayer("bh2025-noc-planning-pops", popOptions);
+        mapObject.loadLayer("bh2024-noc-pops", popOptions);
+        mapObject.loadLayer("bh2022-noc-pops", popOptions);
+        mapObject.loadLayer("bh2021-noc-pops", popOptions);
+        mapObject.loadLayer("bh2019-noc-pops", popOptions);
+        mapObject.loadLayer("bh2024-noc-pics", photoOptions);
 
         mapObject.onGridClick = function (e) {
             e.target.setStyle({fillOpacity: 1.0});

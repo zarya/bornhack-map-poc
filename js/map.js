@@ -19,6 +19,14 @@ class BHMap {
       attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(this.map);
 
+    this.baseLayers['Google Sat'] = L.tileLayer('https://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}', {
+      opacity: 1.0,
+      minZoom: 1,
+      maxZoom: 28,
+      minNativeZoom: 0,
+      maxNativeZoom: 18
+    });
+
     this.controls = L.control.layers(this.baseLayers, this.overlays).addTo(this.map);
 
     this.loadLayer("Grid squares", {
@@ -27,40 +35,6 @@ class BHMap {
         color: "gray",
         fillOpacity: 0.0,
         weight: 0.5
-      }
-    })
-
-    this.loadLayer("mqtt", {
-      onEachFeature: this.onEachMqttFeature,
-      pointToLayer: function(feature, latlng) {
-        if (feature.properties.marker == "circle")
-          return new L.CircleMarker(latlng, {
-            radius: 5,
-            color: '#FF0000'
-          });
-        else
-          return L.marker(latlng) 
-      },
-      style: {
-        color: "green",
-        fillOpacity: 1.0,
-        weight: 0.5
-      }
-    })
-
-    this.loadLayer("bh2025-noc-planning-pops", {   
-      onEachFeature: this.onEachMqttFeature,   
-      pointToLayer: function(_feature, latlng) {   
-        return new L.Circle(latlng, {
-          radius: 25,
-          color: '#FF0000'
-        });
-      },
-      style: {
-        color: "green",
-        fillOpacity: 0.5,
-        weight: 0.2,
-        opacity: 0.5,
       }
     })
   }
