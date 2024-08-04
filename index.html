@@ -53,7 +53,6 @@
 			tempDiv.innerHTML = content;
 			if (tempDiv.querySelector('td img')) {
 				popup._contentNode.classList.add('media');
-					// Delay to force the redraw
 					setTimeout(function() {
 						popup.update();
 					}, 10);
@@ -61,8 +60,25 @@
 				popup._contentNode.classList.remove('media');
 			}
 		}
+
         const mapObject = new BHMap("map");
         const proc  = new Processing();
+        const connectionOptions = {
+            style: {
+                opacity: 1,
+                color: 'rgba(213,180,60,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 8.0,
+                fillOpacity: 0,
+                interactive: true,
+            },
+            onEachFeature: function(feature, layer) {
+                const content = `${feature.properties['name']}<br>From: ${feature.properties['POP_A']}<br>To: ${feature.properties['POP_B']}`
+                layer.bindPopup(content, { maxHeight: 400});
+            }
+        }
         const popOptions = {
             onEachFeature: function(feature, layer) {
                 layer.on('click', function (e) {
@@ -79,7 +95,16 @@
                     addClassToPopupIfMedia(content, e.popup);
                 });
                 layer.bindPopup(content, { maxHeight: 400});
-            }
+            },
+            pointToLayer: function(feature, latlng) {
+                return L.marker(latlng, {icon: new L.Icon({
+                    iconUrl: 'img/photo.png',
+                    iconSize: [25, 25],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                    shadowSize: [41, 41]
+                })});
+            },
         }
 
         mapObject.loadLayer("mqtt", {
@@ -91,7 +116,7 @@
             pointToLayer: function(feature, latlng) {
                 if (feature.properties.marker == "circle")
                     return new L.CircleMarker(latlng, {
-                        radius: 5,
+                        radius: 25,
                         color: '#FF0000'
                     });
                 else
@@ -106,9 +131,10 @@
 
         mapObject.loadLayer("bh2025-noc-planning-pops", popOptions);
         mapObject.loadLayer("bh2024-noc-pops", popOptions);
-        mapObject.loadLayer("bh2022-noc-pops", popOptions);
-        mapObject.loadLayer("bh2021-noc-pops", popOptions);
-        mapObject.loadLayer("bh2019-noc-pops", popOptions);
+        mapObject.loadLayer("bh2024-noc-connections", connectionOptions);
+        mapObject.loadLayer("bh2022-noc-pops", popOptions, false);
+        mapObject.loadLayer("bh2021-noc-pops", popOptions, false);
+        mapObject.loadLayer("bh2019-noc-pops", popOptions, false);
         mapObject.loadLayer("bh2024-noc-pics", photoOptions);
 
         mapObject.onGridClick = function (e) {

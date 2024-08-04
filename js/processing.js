@@ -56,7 +56,7 @@ class Processing {
     var hue = ((1 - payload.avg / 100) * 120).toString(10);
     var color = ["hsl(", hue, ",100%,50%)"].join("");
     layer.setStyle({
-      radius: payload.avg * 1.4,
+      radius: Number(payload.avg),
       fillColor: color
     })
     layer.bindTooltip(layer.feature.properties.Name + ": " + payload.avg + " dB", {
@@ -67,9 +67,8 @@ class Processing {
   }
   golfcar(_topic, payload, layer) {
       layer.setIcon(new L.Icon({
-        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png',
-        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-        iconSize: [25, 41],
+        iconUrl: 'img/golfcar.png',
+        iconSize: [50, 50],
         iconAnchor: [12, 41],
         popupAnchor: [1, -34],
         shadowSize: [41, 41]

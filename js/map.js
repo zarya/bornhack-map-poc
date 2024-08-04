@@ -40,9 +40,12 @@ class BHMap {
   }
 
   //Load a layer and add it to overlay/map
-  loadLayer(name, options) {
+  loadLayer(name, options, active=true) {
     this.loadShapefile(name).then(json => {
-      this.layers[name] = L.geoJson(json, options).addTo(this.map);
+      if (active)
+        this.layers[name] = L.geoJson(json, options).addTo(this.map);
+      else
+        this.layers[name] = L.geoJson(json, options);
       this.controls.addOverlay(this.layers[name], name);
     });
   }
