@@ -10,7 +10,8 @@ var mqttTest = {
 { "type": "Feature", "properties": { "Name": "Exit traffic light", "topic": "trafficlight/2", "func": "trafficlight", "marker": "icon" }, "geometry": { "type": "Point", "coordinates": [ 9.947411992921051, 55.38947338994091 ] } },
 { "type": "Feature", "properties": { "Name": "Hottub temperature", "topic": "hottub", "func": "hottub", "marker": "icon" }, "geometry": { "type": "Point", "coordinates": [ 9.938521468446416, 55.385426164286564 ] } },
 { "type": "Feature", "properties": { "Name": "Noise sensor Bar", "topic": "noisesensor/1", "func": "noisesensor", "marker": "circle" }, "geometry": { "type": "Point", "coordinates": [ 9.940632852470616, 55.387648214454686 ] } },
-{ "type": "Feature", "properties": { "Name": "Noise sensor 2", "topic": "noisesensor\/2", "func": "noisesensor", "marker": "circle" }, "geometry": { "type": "Point", "coordinates": [ 9.937749010876527, 55.387276193829045 ] } }
+{ "type": "Feature", "properties": { "Name": "Noise sensor 2", "topic": "noisesensor\/2", "func": "noisesensor", "marker": "circle" }, "geometry": { "type": "Point", "coordinates": [ 9.937749010876527, 55.387276193829045 ] } },
+{ "type": "Feature", "properties": { "Name": "GolfCar", "topic": "golfcar", "func": "golfcar", "marker": "icon" }, "geometry": { "type": "Point", "coordinates": [ 9.940755653417616, 55.388061483263932 ] } }
 ]
 }
 

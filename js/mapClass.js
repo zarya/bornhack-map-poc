@@ -8,23 +8,29 @@ class BHMap {
     this.onEachGrid = this.onEachGrid.bind(this)
     this.onEachGridClick = this.onEachGridClick.bind(this)
     this.onEachMqttFeature = this.onEachMqttFeature.bind(this)
+    this.controls = undefined;
+    this.baseLayers = {};
+    this.layers = {};
+    this.overlays = {};
     this.cols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', 'AW', 'AX', 'AY', 'AZ'];
     this.map = L.map(div).setView([55.38806, 9.93970], 17);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    this.baseLayers['OSS'] = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(this.map);
 
-    this.gridLayer = L.geoJson(json_Gridsquares_4, {
+    this.controls = L.control.layers(this.baseLayers, this.overlays).addTo(this.map);
+
+    this.loadLayer("Grid squares", {
       onEachFeature: this.onEachGrid,
       style: {
         color: "gray",
         fillOpacity: 0.0,
         weight: 0.5
       }
-    }).addTo(this.map);
+    })
 
-    this.mqttLayer = L.geoJson(mqttTest, {
+    this.loadLayer("mqtt", {
       onEachFeature: this.onEachMqttFeature,
       pointToLayer: function(feature, latlng) {
         if (feature.properties.marker == "circle")
@@ -40,7 +46,37 @@ class BHMap {
         fillOpacity: 1.0,
         weight: 0.5
       }
-    }).addTo(this.map);
+    })
+
+    this.loadLayer("bh2025-noc-planning-pops", {   
+      onEachFeature: this.onEachMqttFeature,   
+      pointToLayer: function(_feature, latlng) {   
+        return new L.Circle(latlng, {
+          radius: 25,
+          color: '#FF0000'
+        });
+      },
+      style: {
+        color: "green",
+        fillOpacity: 0.5,
+        weight: 0.2,
+        opacity: 0.5,
+      }
+    })
+  }
+
+  //Load a layer and add it to overlay/map
+  loadLayer(name, options) {
+    this.loadShapefile(name).then(json => {
+      this.layers[name] = L.geoJson(json, options).addTo(this.map);
+      this.controls.addOverlay(this.layers[name], name);
+    });
+  }
+
+  async loadShapefile(table) {
+    let url = `https://bh.gigafreak.net/postgis/${table}/`;
+    let shape_obj = await (await fetch(url)).json();
+    return shape_obj
   }
 
   // Find the grid locator by lat lng
